@@ -4,7 +4,7 @@ The folder for (almost) all of my bash scripts. For convenience, I've made the b
 # Broad categories that the scripts fall under
 
 ## C/C++ Development Environment
-Scripts: c.init, cc.init, tmux-compile-run, compile-run, c.makefile.init, cc.makefile.init
+#### Scripts: c.init, cc.init, tmux-compile-run, compile-run, c.makefile.init, cc.makefile.init
 These scripts are the latest additions in the gcc->makefile->cmake chain, that automatically generates the CMakeLists.txt file for you, and provides functionality to compile and run your C/C++ code. The scripts are designed to be used in a Linux environment but feel free to adapt it to a Windows environment too if you want. 
 Required: tmux, gcc, g++, make, cmake
 
@@ -15,7 +15,7 @@ Bindings:
     tmux.conf: bind m run-shell "cd #{pane_current_path} && ~/projects/bash/tmux-compile-run"
 
 ## Tmux specific scripts
-Scripts: tmux-new-session, tmux-switch-kill
+#### Scripts: tmux-new-session, tmux-switch-kill
 
 ## Singular scripts
 
