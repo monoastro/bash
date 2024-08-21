@@ -1,4 +1,6 @@
 #!/bin/bash
+# this is for younger me who refused to fall into the bloated, normie visual studio + c++ environment pipeline
+
 # this script exits if any commands exits with non-zero return value; removes the headache of having to check every command
 # if I do want a verbose error, conditional blocks ovveride set -e
 set -e
