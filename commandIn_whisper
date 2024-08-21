@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ffmpeg -y -f alsa -i default -acodec pcm_s16le -ac 1 -ar 16000 -t 4 -f wav /home/jenishp/.cache/command.wav >/dev/null 2>&1
+whisper -m /home/jenishp/Projects/models/speechToTxt/ggml-base.en.bin -t 4 ~/.cache/command.wav -otxt >/dev/null 2>&1
+cat /home/jenishp/.cache/command.wav.txt

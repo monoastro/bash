@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while true
+do
+	xdotool getmouselocation
+	sleep 0.001
+	clear
+done

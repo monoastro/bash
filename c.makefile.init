@@ -1,0 +1,28 @@
+#!/bin/bash
+mkdir -p bin src include
+cat > src/main.c << 'EOF'
+#include <stdio.h>
+
+int main()
+{
+	return 0;
+}
+EOF
+cat > Makefile << 'EOF'
+CC          := gcc
+CFLAGS      := -Wall -Wextra -std=c99 -Werror -pedantic -ggdb
+BIN         := bin
+SRC         := src
+INCLUDE     := include
+LIB         := lib
+LIBRARIES   :=
+EXECUTABLE  := main
+
+.PHONY: run
+run: $(BIN)/$(EXECUTABLE)
+	./$(BIN)/$(EXECUTABLE)
+
+$(BIN)/$(EXECUTABLE): $(SRC)/*.c
+	$(CC) $(CFLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
+EOF
+bear -- make

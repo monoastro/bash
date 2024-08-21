@@ -1,0 +1,2 @@
+#!/bin/sh
+chafa ~/projects/bin/lain_glitching.gif --color-extractor median

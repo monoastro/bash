@@ -1,0 +1,43 @@
+#!/bin/bash
+# tmux-pane-run runs the script piped into it in the directory of the pane from which it is called with the following behaviour -
+# if the pane is empty(see below), the script is ran in the pane called
+# conversely, if it's not empty, it's ran in a new pane
+
+# an empty pane is assumed to be one with no child processes(the first one)
+find_empty_pane()
+{
+    tmux list-panes -F '#{pane_id} #{pane_pid}' | 
+    while read -r pane_id pane_pid; do
+        if ! pgrep -P "$pane_pid" > /dev/null; then
+            echo "$pane_id"
+            return 0
+        fi
+    done
+    return 1
+}
+empty_pane=$(find_empty_pane)
+#printf "%s\n" "$empty_pane"
+# while true; do tmux display-message -p '#{pane_id}'; sleep 1; done;
+
+current_pane=$(tmux display-message -p '#{pane_id}')
+
+if [ -n "$empty_pane" ]; then
+	# it has evolved to be like this because the empty pane has the freedom to be in any directory
+	# but compile_run HAS to be run from the root directory when called from neovim
+    tmux send-keys -t "$empty_pane" "cd $(tmux display-message -p '#{pane_current_path}') && compile_run" C-m
+else
+    tmux split-window -h -c "#{pane_current_path}"
+    tmux send-keys "compile_run" C-m
+	# I can't decide which one's the better default behaviour; switching the cursor to the current pane or empty one
+	#tmux select-pane -t "$current_pane"
+fi
+#eh you know what dawg where you are is where you'll stay
+#sometimes simpler is much much better and oh so much less of a headache
+
+
+## Legacy comments -- Ignore
+# Maybe later on make this script language agnostic, like being able to configure which command to run for which language in tmux.conf
+# for now though it's exclusive to c/cpp(specifically my c/cpp configuration) - would be even better to call this script tmux-cmake right now
+
+# hmm although looking at this script now, it's general enough to execute any script in an empty pane in the current directory
+# so maybe generalize it to tmux-pane-run later into which I can pipe the script I want to run as an argument

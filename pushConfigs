@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# assert that we are in the right directory
+if [ ! -d "alacritty" ]; then
+	echo "This script must be ran from the .config directory\nz into conf and then run this script buddy"
+	exit 1
+fi
+
+git add alacritty
+git add awesome
+git add nvim
+git add picom
+git add tmux
+git add starship.toml
+
+read -p "Enter commit message: " message
+
+git commit -m "$message"
+git push

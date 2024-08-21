@@ -1,0 +1,86 @@
+#!/bin/bash
+# this script exits if any commands exits with non-zero return value; removes the headache of having to check every command
+# if I do want a verbose error, conditional blocks ovveride set -e
+set -e
+
+if [ $# -eq 0 ]; then
+    echo "Enter project name:"
+    read project_name
+else
+    project_name="$1"
+fi
+
+if [ -z "$project_name" ]; then
+    echo "A project's gotta have a name."
+    exit 1
+fi
+
+if [ "$project_name" != "." ]; then
+	echo "Creating project $project_name's directories"
+	mkdir -p "$project_name" || { echo "Something went wrong creating a folder with this name"; exit 1; }
+	cd "$project_name"
+else
+	project_name=$(basename "$PWD")
+fi
+
+mkdir -p bin src include build
+echo "Project $project_name's directories created successfully."
+
+existing_project=0
+if [ ! -f src/main.cpp ]; then
+cat > src/main.cpp << 'EOF'
+#include <iostream>
+
+int main()
+{
+	std::cout << "Hello, world!\n";
+	return 0;
+}
+EOF
+else
+	existing_project=1
+	echo "Existing project detected. Skipping creating src/main.cpp."
+fi
+
+project_name_underscore=$(echo "$project_name" | tr ' ' '_') # apparently cmake doesn't like spaces in project names
+cat > CMakeLists.txt << EOF
+cmake_minimum_required(VERSION 3.10)
+project("${project_name_underscore}" VERSION 0.1.0 LANGUAGES CXX)
+set(BINARY \${PROJECT_NAME})
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_compile_options(-Wall -Wextra -Werror -pedantic)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+find_package(Boost 1.71.0 REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+
+file(MAKE_DIRECTORY \${CMAKE_BINARY_DIR}/../bin)
+file(GLOB SOURCES "src/*.cpp")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_BINARY_DIR}/../bin)
+
+add_executable(\${BINARY} \${SOURCES})
+target_include_directories(\${BINARY} PRIVATE include)
+target_link_libraries(\${BINARY} Boost::boost Eigen3::Eigen)
+EOF
+
+cat > .gitignore << EOF
+build/
+bin/
+compile_commands.json
+.cache/
+EOF
+
+if [ $existing_project -eq 0 ]; then
+	if compile_run; then
+		echo -e "\e[1;35mInitial build with the boost and eigen library successful.\e[0m"
+	else
+		echo -ne "\e[1;31m\nInitial build with the boost and eigen library failed.\e[0m"
+		exit 1
+	fi
+else
+	echo -e "\e[1;31mSince this is an existing project, make sure to modify CMakeLists.txt to your needs before compiling and remove any unnecessary Makefile and stuff from the old project structure.\e[0m"
+fi
+
+echo -ne "\e[1;35mProject $project_name has been set up successfully.\e[0m"

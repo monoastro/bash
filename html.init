@@ -1,0 +1,19 @@
+#!/bin/bash
+
+cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hello, world!</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="" />
+</head>
+<body>
+
+</body>
+</html>
+EOF
+
+touch index.js
+touch index.css

@@ -1,0 +1,80 @@
+#!/bin/bash
+set -e
+
+if [ $# -eq 0 ]; then
+    echo "Enter project name:"
+    read project_name
+else
+    project_name="$1"
+fi
+
+if [ -z "$project_name" ]; then
+    echo "A project's gotta have a name."
+    exit 1
+fi
+
+if [ "$project_name" != "." ]; then
+	echo "Creating project $project_name's directories"
+	mkdir -p "$project_name" || { echo "Something went wrong creating a folder with this name"; exit 1; }
+	cd "$project_name"
+else
+	project_name=$(basename "$PWD")
+fi
+
+mkdir -p bin src include build
+echo "Project $project_name's directories created successfully"
+
+existing_project=0
+if [ ! -f src/main.c ]; then
+cat > src/main.c << 'EOF'
+#include <stdio.h>
+
+int main()
+{
+	printf("Hello, World!\n");
+	return 0;
+}
+EOF
+else
+	existing_project=1
+	echo "Existing project detected. Skipping creating src/main.c."
+fi
+
+project_name_underscore=$(echo "$project_name" | tr ' ' '_') 
+cat > CMakeLists.txt << EOF
+cmake_minimum_required(VERSION 3.10)
+project("${project_name_underscore}" VERSION 0.1.0 LANGUAGES C)
+set(BINARY \${PROJECT_NAME})
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+add_compile_options(-Wall -Wextra -Werror -pedantic)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+file(MAKE_DIRECTORY \${CMAKE_BINARY_DIR}/../bin)
+file(GLOB SOURCES "src/*.c")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_BINARY_DIR}/../bin)
+
+add_executable(\${BINARY} \${SOURCES})
+target_include_directories(\${BINARY} PRIVATE include)
+EOF
+
+cat > .gitignore << EOF
+build/
+bin/
+compile_commands.json
+.cache/
+EOF
+
+if [ $existing_project -eq 0 ]; then
+	if compile_run; then
+		echo -e "\e[1;35mInitial build successful.\e[0m"
+	else
+		echo -ne "\e[1;31m\nInitial build failed.\e[0m"
+		exit 1
+	fi
+else
+	echo -e "\e[1;31mSince this is an existing project, make sure to modify CMakeLists.txt to your needs before compiling and remove any unnecessary Makefile and stuff from the old project structure.\e[0m"
+fi
+
+echo -ne "\e[1;35mProject $project_name has been set up successfully.\e[0m"

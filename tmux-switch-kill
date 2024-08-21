@@ -1,0 +1,25 @@
+#!/bin/bash
+#env > /tmp/tmux-env.txt
+#echo $PATH > /tmp/tmux-path.txt
+
+# idk why tmux has something so niche, convenient and specific feature as -F for a terminal multiplexer
+sessions=$(tmux list-sessions -F "#{session_name}")
+# apparently this tool wc has existed for a long time and I'm only finding about it now
+session_count=$(echo "$sessions" | wc -l)
+
+if [ "$session_count" -gt 1 ]; then
+    current_session=$(tmux display-message -p '#{session_name}')
+    
+    # get a random session other than the current one
+	# ideally, this would be the last session like prefix + L
+	# but idk what the command for that is
+    next_session=$(echo "$sessions" | grep -v "^$current_session$" | head -n 1)
+
+    tmux switch-client -t "$next_session"
+    tmux kill-session -t "$current_session" # hmm the naming scheme is a bit off here
+else
+	# default behaviour of killing the current session if it's the only one
+	# well not really default because there's no shortcut for killing the current sesh( not that I know of)
+    tmux kill-session -t "$current_session"
+fi
+

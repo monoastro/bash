@@ -1,0 +1,28 @@
+#!/bin/bash
+# the language agnosticism needs to be implemented here instead of tmux-compile-run
+set -e
+if [ ! -f CMakeLists.txt ]; then
+	echo -ne "\e[1;31mCMakeLists.txt not found. Are you sure you're in the project's root directory?\e[0m"
+	exit 1
+fi
+mkdir -p build
+cd build
+cmake .. || { echo -ne "\e[1;31mCMakeLists.txt configuration is stupid.\e[0m"; exit 1; }
+cmake --build . || { echo -ne "\e[1;31mBuild failed.\e[0m"; exit 1; }
+mv compile_commands.json ..
+
+latest_binary=$(find ../bin -type f -executable -print0 | xargs -0 ls -t | head -n1)
+if [ -n "$latest_binary" ]; then
+	echo -ne "\e[1;34m$(basename $latest_binary) \e[0m"
+    "$latest_binary"
+else
+    echo -ne "\e[1;31mNo executable found in bin directory.\e[0m"
+    exit 1
+fi
+
+# yeah nah finding the latest binary suits my needs much better than this naive approach
+# but I've already grown attached to these two lines
+#if [ -f "./bin/${project_name_underscore}" ]; then
+#    ./bin/${project_name_underscore}
+
+
