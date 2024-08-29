@@ -46,39 +46,41 @@ fi
 
 project_name_underscore=$(echo "$project_name" | tr ' ' '_') # apparently cmake doesn't like spaces in project names
 cat > CMakeLists.txt << EOF
+# Project Info
 cmake_minimum_required(VERSION 3.10)
 project("${project_name_underscore}" VERSION 0.1.0 LANGUAGES CXX)
 set(BINARY \${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# compiler flags, directories and libraries
 add_compile_options(-Wall -Wextra -Werror -pedantic)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-find_package(Boost 1.71.0 REQUIRED)
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-
 file(MAKE_DIRECTORY \${CMAKE_BINARY_DIR}/../bin)
-file(GLOB SOURCES "src/*.cpp")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY \${CMAKE_BINARY_DIR}/../bin)
+#find_package(Boost 1.71.0 REQUIRED)
+#find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+#link_directories(\${CMAKE_SOURCE_DIR}/lib)
 
+# compilation and linking
+file(GLOB SOURCES "src/*.cpp")
 add_executable(\${BINARY} \${SOURCES})
 target_include_directories(\${BINARY} PRIVATE include)
-target_link_libraries(\${BINARY} Boost::boost Eigen3::Eigen)
+#target_link_libraries(\${BINARY} Boost::boost Eigen3::Eigen)
 EOF
 
 cat > .gitignore << EOF
 build/
-bin/
 compile_commands.json
 .cache/
 EOF
 
 if [ $existing_project -eq 0 ]; then
 	if compile_run; then
-		echo -e "\e[1;35mInitial build with the boost and eigen library successful.\e[0m"
+		echo -e "\e[1;35mInitial build successful.\e[0m"
 	else
-		echo -ne "\e[1;31m\nInitial build with the boost and eigen library failed.\e[0m"
+		echo -ne "\e[1;31m\nInitial build failed.\e[0m"
 		exit 1
 	fi
 else

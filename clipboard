@@ -1,0 +1,3 @@
+#!/bin/bash
+
+awk '{gsub(/\033\[[0-9;]*[mK]/, ""); print $0}' | xclip -selection c

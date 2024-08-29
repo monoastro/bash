@@ -1,6 +1,6 @@
 #!/bin/sh
 languages=$(echo "c cpp typescript nodejs python golang rust arduino lua" | tr ' ' '\n')
-core_utils=$(echo "xargs find mv sed awk curl tmux" | tr ' ' '\n')
+core_utils=$(echo "xargs find mv sed awk bash curl tmux" | tr ' ' '\n')
 
 selected=$(printf "%s\n%s" "$languages" "$core_utils" | fzf)
 read -p "Query: " query
