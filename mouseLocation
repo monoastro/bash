@@ -1,8 +1,10 @@
 #!/bin/sh
 
-while true
-do
-	xdotool getmouselocation
-	sleep 0.001
-	clear
-done
+if [ "$XDG_SESSION_TYPE" = "x11" ]; then
+    while true; do
+        printf "\r%s      " "$(xdotool getmouselocation)"
+        sleep 0.03
+    done
+else
+    echo "Wayland detected: cannot access mouse position from bash."
+fi

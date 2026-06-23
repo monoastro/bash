@@ -22,3 +22,5 @@ then
     notify-send "High Battery" "Battery energy above 80%. Unplug it this instance." -u critical -i "battery-alert" -r 9991 -a "Battery police"
     touch $FULL_FILE
 fi
+
+# */5 * * * * /home/jenishp/projects/bash/battery.sh

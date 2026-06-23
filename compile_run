@@ -10,8 +10,9 @@ cd build
 cmake .. || { echo -ne "\e[1;31mCMakeLists.txt configuration is stupid.\e[0m"; exit 1; }
 cmake --build . || { echo -ne "\e[1;31mBuild failed.\e[0m"; exit 1; }
 mv compile_commands.json ..
+cd ..
 
-latest_binary=$(find ../bin -type f -executable -print0 | xargs -0 ls -t | head -n1)
+latest_binary=$(find ./bin -type f -executable -print0 | xargs -0 ls -t | head -n1)
 if [ -n "$latest_binary" ]; then
 	echo -e "\e[1;34m$(basename $latest_binary) \e[0m"
     "$latest_binary"
