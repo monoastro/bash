@@ -7,11 +7,9 @@ if [ ! -d "alacritty" ]; then
 fi
 
 git add alacritty
-git add awesome
 git add nvim
-git add picom
 git add tmux
-git add starship.toml
+git add hypr
 
 read -p "Enter commit message: " message
 
