@@ -49,8 +49,8 @@ neovim
 tmux
 yazi
 
-grim
 slurp
+grim
 wl-clipboard
 
 fastfetch

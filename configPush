@@ -10,6 +10,7 @@ git add alacritty
 git add nvim
 git add tmux
 git add hypr
+git add yazi
 
 read -p "Enter commit message: " message
 
